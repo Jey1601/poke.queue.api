@@ -11,7 +11,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-driver = os.getenv('SQL_DRIVER2')
+driver = os.getenv('SQL_DRIVER')
 server = os.getenv('SQL_SERVER')
 database = os.getenv('SQL_DATABASE')
 username = os.getenv('SQL_USERNAME')
