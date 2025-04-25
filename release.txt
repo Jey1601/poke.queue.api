@@ -5,9 +5,9 @@ docker run -d -p 8000:8000 --name pokeapi-container --env-file .env pokeapi:late
 az acr login --name <<Nombre del container registry>>
 
 docker tag pokeapi:latest acrpokequeuedevjey.azurecr.io/pokeapi:latest
-docker tag pokeapi:latest acrpokequeuedevjey.azurecr.io/pokeapi:0.2.1
+docker tag pokeapi:latest acrpokequeuedevjey.azurecr.io/pokeapi:0.1.0
 
 docker push acrpokequeuedevjey.azurecr.io/pokeapi:latest
-docker push acrpokequeuedevjey.azurecr.io/pokeapi:0.2.1
+docker push acrpokequeuedevjey.azurecr.io/pokeapi:0.1.0
 
 func azure functionapp publish serverless-pokequeue-dev-jey

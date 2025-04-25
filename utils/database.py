@@ -11,13 +11,14 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-driver = os.getenv('SQL_DRIVER')
+driver = os.getenv('SQL_DRIVER2')
 server = os.getenv('SQL_SERVER')
 database = os.getenv('SQL_DATABASE')
 username = os.getenv('SQL_USERNAME')
 password = os.getenv('SQL_PASSWORD')
 
-connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}"
+print(f"Driver: {driver}")
+connection_string = f"DRIVER={{{driver}}};SERVER={server};DATABASE={database};UID={username};PWD={password}"
 
 
 async def get_db_connection():

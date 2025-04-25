@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from models.PokeRequest import PokeRequest
 from utils.database import execute_query_json
 from utils.AQueue import AQueue
+from utils.ABlob import ABlob
 
 #Configuración del logging
 logging.basicConfig(level=logging.INFO)
@@ -45,8 +46,8 @@ async def update_pokemon_request(poke_request: PokeRequest) -> dict:
 
 async def insert_pokemon_request(poke_request: PokeRequest) -> dict:
     try:  
-        query = "exec pokequeue.create_poke_request ? "
-        params = (poke_request.pokemon_type,)
+        query = "exec pokequeue.create_poke_request ?, ? "
+        params = (poke_request.pokemon_type, poke_request.pokemon_qty)
         result = await execute_query_json(query, params, True)
         result_dict = json.loads(result)
         
@@ -57,7 +58,7 @@ async def insert_pokemon_request(poke_request: PokeRequest) -> dict:
         logger.error(f"Error inserting Pokemon request: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-async def get_all_request() -> dict:
+async def get_all_request( ) -> dict:
     query = """
         select 
             r.id as ReportId
@@ -66,6 +67,7 @@ async def get_all_request() -> dict:
             , r.url 
             , r.created 
             , r.updated
+            , r.qty as PokemonQty
         from pokequeue.requests r 
         inner join pokequeue.status s 
         on r.id_status = s.id 
@@ -78,3 +80,35 @@ async def get_all_request() -> dict:
         record['url'] = f"{record['url']}?{blob.generate_sas(id)}"
     return result_dict
 
+async def delete_pokemon_request(poke_request_id: int) -> dict:
+    try:
+        #  Intentamos eliminar primero el blob
+        blob = ABlob()
+        blob_response = blob.delete_blob(poke_request_id)
+
+        if not blob_response["success"]:
+            # Si falla, no hacemos nada más
+            return [{
+                "message": " No se eliminó el reporte en la base de datos porque falló la eliminación del blob.",
+                "blob_deletion": blob_response
+            }]
+        
+        #  Si el blob fue eliminado correctamente, eliminamos en la base de datos
+        query = "exec pokequeue.delete_poke_request ?"
+        params = (poke_request_id,)
+        result = await execute_query_json(query, params, True)
+
+        try:
+            result = json.loads(result)
+        except json.JSONDecodeError:
+            result = []
+
+        #  Adjuntamos al resultado de la base la info del blob
+        if result:
+            result[0]["blob_deletion"] = blob_response
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error deleting Pokemon request: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
