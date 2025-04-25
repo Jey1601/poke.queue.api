@@ -2,12 +2,12 @@ docker buildx build --platform linux/amd64 -t pokeapi:latest . --load
 
 docker run -d -p 8000:8000 --name pokeapi-container --env-file .env pokeapi:latest
 
-az acr login --name <<Nombre del container registry>>
+az acr login --name acrpokequeuedevjey
 
 docker tag pokeapi:latest acrpokequeuedevjey.azurecr.io/pokeapi:latest
-docker tag pokeapi:latest acrpokequeuedevjey.azurecr.io/pokeapi:0.1.0
+docker tag pokeapi:latest acrpokequeuedevjey.azurecr.io/pokeapi:0.3.0
 
 docker push acrpokequeuedevjey.azurecr.io/pokeapi:latest
-docker push acrpokequeuedevjey.azurecr.io/pokeapi:0.1.0
+docker push acrpokequeuedevjey.azurecr.io/pokeapi:0.3.0
 
 func azure functionapp publish serverless-pokequeue-dev-jey

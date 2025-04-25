@@ -26,7 +26,7 @@ async def root():
 
 @app.get("/api/version")
 async def get_version():
-    return {"version": "0.2.0"}
+    return {"version": "0.3.0"}
 
 @app.get("/api/request/{request_id}")
 async def select_request(request_id: int):
